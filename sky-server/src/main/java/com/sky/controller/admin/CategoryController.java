@@ -18,8 +18,7 @@ public class CategoryController {
     @Resource
     CategoryService categoryService;
 
-    @RequestMapping("/page")
-
+    @GetMapping("/page")
     public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO) {
         PageResult page = categoryService.page(categoryPageQueryDTO);
         return Result.success(page);
