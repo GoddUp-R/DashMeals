@@ -119,6 +119,6 @@ public class EmployeeController {
     public Result update(@RequestBody EmployeeDTO employeeDTO){
         employeeService.update(employeeDTO);
         return Result.success();
-
     }
+
 }

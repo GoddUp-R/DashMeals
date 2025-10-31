@@ -6,11 +6,31 @@
         insert into dish (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
-    <select id="query" resultType="com.sky.entity.Dish">
-        select * from dish
+    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="query" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as categoryName from dish d left join category c on d.category_id = c.id
         <where>
             <if test="name != null">
-                and name like concat('%',#{name},'%')
+                and d.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
@@ -19,11 +39,18 @@
                 and status = #{status}
             </if>
             <if test="id != null">
-                and id = #{id}
+                and d.id = #{id}
             </if>
             <if test="description != null">
                 and description like concat('%',#{description},'%')
             </if>
         </where>
+    </select>
+    <select id="queryById" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as categoryName from dish d left join category c on d.category_id = c.id
+        where d.id = #{id}
+    </select>
+    <select id="queryByCategoryId" resultType="com.sky.entity.Dish">
+        select * from dish where category_id = #{categoryId}
     </select>
 </mapper>

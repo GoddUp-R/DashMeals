@@ -96,7 +96,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //调用mapper层方法查询数据
         Page<Employee> records = (Page<Employee>) employeeMapper.pageQuery(employee);
         //返回分页结果
-        return new PageResult(records.size(), records);
+        return new PageResult(records.getTotal(), records);
     }
 
     @Override

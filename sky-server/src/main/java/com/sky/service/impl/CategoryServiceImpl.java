@@ -13,6 +13,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
+import com.sky.vo.DishVO;
 import org.springframework.stereotype.Service;
 import com.sky.mapper.CategoryMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void delete(Long id) {
         // 检查分类是否关联了菜品
-        List<Dish> dishList = dishMapper.query(Dish.builder().categoryId(id).build());
+        List<DishVO> dishList = dishMapper.query(Dish.builder().categoryId(id).build());
         if (!dishList.isEmpty()) {
             throw new DeletionNotAllowedException("分类关联了菜品，不能删除");
         }
