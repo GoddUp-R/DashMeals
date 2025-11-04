@@ -42,23 +42,23 @@
             #{id}
         </foreach>
     </delete>
-    <select id="query" resultType="com.sky.entity.Setmeal">
-        select * from setmeal
+     <select id="query" resultType="com.sky.vo.SetmealVO">
+        select s.*, c.name as categoryName from setmeal s left join category c on s.category_id = c.id
         <where>
             <if test="name != null">
-                and name like concat('%',#{name},'%')
+                and s.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
-                and category_id = #{categoryId}
+                and s.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and s.status = #{status}
             </if>
             <if test="id != null">
-                and id = #{id}
+                and s.id = #{id}
             </if>
             <if test="description != null">
-                and description like concat('%',#{description},'%')
+                and s.description like concat('%',#{description},'%')
             </if>
         </where>
     </select>

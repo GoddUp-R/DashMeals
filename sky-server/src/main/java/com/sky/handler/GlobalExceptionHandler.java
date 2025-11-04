@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         if(ex.getMessage().contains("Duplicate entry")){
             //获取用户名
             String username = ex.getMessage().split(" ")[2];
-            return Result.error("重复数据，用户名：" + username);
+            return Result.error("重复数据:" + username);
         }else{
             return Result.error("数据库异常");
         }

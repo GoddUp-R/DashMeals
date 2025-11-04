@@ -43,7 +43,7 @@ public class SetmealServiceImpl implements SetmealService {
             setmeal.setStatus(setmealPageQueryDTO.getStatus());
         }
         PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
-        Page<Setmeal> list = (Page<Setmeal>)setmealMapper.query(setmeal);
+        Page<SetmealVO> list = (Page<SetmealVO>)setmealMapper.query(setmeal);
         return new PageResult(list.getTotal(), list.getResult());
     }
 

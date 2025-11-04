@@ -14,6 +14,7 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import com.sky.vo.DishVO;
+import com.sky.vo.SetmealVO;
 import org.springframework.stereotype.Service;
 import com.sky.mapper.CategoryMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         // 检查分类是否关联了套餐
-        List<Setmeal> setmealList = setmealMapper.query(Setmeal.builder().categoryId(id).build());
+        List<SetmealVO> setmealList = setmealMapper.query(Setmeal.builder().categoryId(id).build());
         if (!setmealList.isEmpty()) {
             throw new DeletionNotAllowedException("分类关联了套餐，不能删除");
         }
