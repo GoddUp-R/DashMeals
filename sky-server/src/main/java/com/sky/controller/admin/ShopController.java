@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-@RestController
+@RestController("adminShopController")
 @RequestMapping("/admin/shop")
 public class ShopController {
 

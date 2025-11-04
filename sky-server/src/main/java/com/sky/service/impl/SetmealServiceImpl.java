@@ -123,4 +123,9 @@ public class SetmealServiceImpl implements SetmealService {
         //批量删除setmeal_dish表中的数据
         setmealDishMapper.deleteBySetmealIds(ids);
     }
+
+    @Override
+    public List<Setmeal> listSetmeal(Long categoryId) {
+        return setmealMapper.listSetmealByCategoryId(categoryId);
+    }
 }

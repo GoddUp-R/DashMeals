@@ -65,4 +65,7 @@
     <select id="queryById" resultType="com.sky.entity.Setmeal">
         select * from setmeal where id = #{id}
     </select>
+    <select id="listSetmealByCategoryId" resultType="com.sky.entity.Setmeal">
+        select * from setmeal where category_id = #{categoryId}
+    </select>
 </mapper>

@@ -9,6 +9,7 @@ import com.sky.entity.DishFlavor;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import com.sky.mapper.DishMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -137,6 +139,34 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<Dish> listByCategoryId(Long categoryId) {
         return dishMapper.queryByCategoryId(categoryId);
+    }
+
+
+     /**
+      * 根据分类id查询菜品和口味
+      * @param categoryId
+      * @return
+      */
+    @Override
+    public List<DishVO> listDishAndFlavor(Long categoryId) {
+        List<Dish> dishes = dishMapper.queryByCategoryId(categoryId);
+        ArrayList<DishVO> dishVOs = new ArrayList<>();
+        if(dishes != null && dishes.size() > 0){
+            for (Dish dish : dishes) {
+                DishVO dishVO = new DishVO();
+                BeanUtils.copyProperties(dish, dishVO);
+                //查询口味数据
+                List<DishFlavor> flavors = dishFlavorMapper.queryByDishId(dish.getId());
+                dishVO.setFlavors(flavors);
+                dishVOs.add(dishVO);
+            }
+        }
+        return dishVOs;
+    }
+
+    @Override
+    public List<DishItemVO> listDishItemBySetmealId(Long id) {
+        return dishMapper.queryDishItemBySetmealId(id);
     }
 
 

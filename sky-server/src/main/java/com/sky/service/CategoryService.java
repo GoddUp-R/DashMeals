@@ -32,6 +32,11 @@ public interface CategoryService {
 
     void insert(CategoryDTO categoryDTO);
 
+    /**
+     * 根据类型查询分类
+     * @param type
+     * @return
+     */
     List<Category> list(Integer type);
 
     void delete(Long id);

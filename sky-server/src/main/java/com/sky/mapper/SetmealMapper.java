@@ -15,6 +15,12 @@ public interface SetmealMapper {
 
     @AutoFill(value = OperationType.INSERT)
     void insert(Setmeal setmeal);
+    /**
+     * 根据分类id查询套餐
+     * @param categoryId
+     * @return
+     */
+    List<Setmeal> listSetmealByCategoryId(Long categoryId);
 
     Setmeal queryById(Long id);
 
