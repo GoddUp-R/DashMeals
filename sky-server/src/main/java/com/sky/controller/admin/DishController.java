@@ -8,6 +8,7 @@ import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ public class DishController {
     private DishService dishService;
 
     @PostMapping
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result save(@RequestBody DishDTO dishDTO) {
         dishService.saveFlavorAndDish(dishDTO);
         return Result.success();
@@ -52,6 +54,7 @@ public class DishController {
      */
     @Operation(summary = "修改菜品")
     @PutMapping
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result update(@RequestBody DishDTO dishDTO) {
         dishService.updateFlavorAndDish(dishDTO);
         return Result.success();
@@ -66,6 +69,7 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result startOrStop(@PathVariable Integer status, Long id) {
         dishService.startOrStop(status, id);
         return Result.success();
@@ -79,6 +83,7 @@ public class DishController {
       */
     @Operation(summary = "批量删除菜品")
     @DeleteMapping
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result delete(@RequestParam List<Long> ids) {
         dishService.delete(ids);
         return Result.success();
