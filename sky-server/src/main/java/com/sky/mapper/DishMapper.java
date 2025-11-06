@@ -23,6 +23,13 @@ public interface DishMapper {
       */
     public List<Dish> queryByCategoryId(Long categoryId);
 
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    Dish queryEntity(Long id);
+
     @AutoFill(value = OperationType.INSERT)
     public void insert(Dish dish);
     /**

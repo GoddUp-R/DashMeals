@@ -22,6 +22,11 @@ public interface SetmealMapper {
      */
     List<Setmeal> listSetmealByCategoryId(Long categoryId);
 
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
     Setmeal queryById(Long id);
 
     @AutoFill(value = OperationType.UPDATE)
