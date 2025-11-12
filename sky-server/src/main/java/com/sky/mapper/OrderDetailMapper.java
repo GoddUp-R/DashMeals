@@ -8,4 +8,11 @@ import java.util.List;
 @Mapper
 public interface OrderDetailMapper {
     void insertBatch(List<OrderDetail> orderDetailList);
+
+    /**
+     * 根据订单id查询订单明细
+     * @param id
+     * @return
+     */
+    List<OrderDetail> queryOrderDetailByOrderId(Long id);
 }
