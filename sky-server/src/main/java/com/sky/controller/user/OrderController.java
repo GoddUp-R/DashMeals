@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -11,9 +12,8 @@ import com.sky.vo.OrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
-@RestController
+@RestController("userOrderController")
 @RequestMapping("/user/order")
 public class OrderController {
     @Autowired
@@ -83,4 +83,6 @@ public class OrderController {
         orderService.repetition(id);
         return Result.success();
     }
+
+
 }

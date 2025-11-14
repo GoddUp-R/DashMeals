@@ -3,9 +3,7 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
@@ -19,6 +17,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
@@ -127,6 +126,9 @@ public class OrderServiceImpl implements OrderService {
         orders.setNumber(orderNumber);
         orders.setPayStatus(Orders.PAID);
         orders.setStatus(Orders.TO_BE_CONFIRMED);
+        //设置结账时间
+        orders.setCheckoutTime(LocalDateTime.now());
+        //更新订单信息
         ordersMapper.update(orders);
     }
 
@@ -213,5 +215,124 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartMapper.deleteBatch(BaseContext.getCurrentId());
         //批量插入购物车
         shoppingCartMapper.insertBatch(ShoppingCartList);
+    }
+
+    /**
+     * 订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult page(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> ordersList = ordersMapper.query(ordersPageQueryDTO);
+        return new PageResult(ordersList.getTotal(),ordersList.getResult());
+    }
+
+    @Transactional
+    @Override
+    public OrderStatisticsVO statistics() {
+        //根据用户id查询订单统计信息
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        Page<Orders> query = ordersMapper.query(ordersPageQueryDTO);
+        int toBeConfirmed = 0;
+        int confirmed = 0;
+        int deliveryInProgress = 0;
+        for (Orders orders : query) {
+            if(orders.getStatus() == Orders.TO_BE_CONFIRMED) {
+                toBeConfirmed++;
+            } else if(orders.getStatus() == Orders.CONFIRMED) {
+                confirmed++;
+            } else if(orders.getStatus() == Orders.DELIVERY_IN_PROGRESS) {
+                deliveryInProgress++;
+            }
+        }
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+        orderStatisticsVO.setConfirmed(confirmed);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+
+
+        return orderStatisticsVO;
+    }
+
+    @Override
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        //根据订单id查询订单信息
+        Orders orders = ordersMapper.queryById(ordersConfirmDTO.getId());
+        if(orders == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        //更新订单状态
+        orders.setStatus(Orders.CONFIRMED);
+        ordersMapper.update(orders);
+    }
+
+    @Override
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        //根据订单id查询订单信息
+        Orders orders = ordersMapper.queryById(ordersRejectionDTO.getId());
+        if(orders == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        //更新订单状态
+        orders.setStatus(Orders.CANCELLED);
+        //设置拒绝原因
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        ordersMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    @Override
+    public void delivery(Long id) {
+        //根据订单id查询订单信息
+        Orders orders = ordersMapper.queryById(id);
+        if(orders == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        //更新订单状态
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        ordersMapper.update(orders);
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    @Override
+    public void complete(Long id) {
+        //根据订单id查询订单信息
+        Orders orders = ordersMapper.queryById(id);
+        if(orders == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        //更新订单状态
+        orders.setStatus(Orders.COMPLETED);
+        //设置派送时间
+        orders.setDeliveryTime(LocalDateTime.now());
+        ordersMapper.update(orders);
+    }
+
+        /**
+     * 管理员取消订单
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void cancelOnAdmin(OrdersCancelDTO ordersCancelDTO) {
+        //根据订单id查询订单信息
+        Orders orders = ordersMapper.queryById(ordersCancelDTO.getId());
+        if(orders == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        //更新订单状态
+        orders.setStatus(Orders.CANCELLED);
+        //设置取消原因
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        //设置取消时间
+        orders.setCancelTime(LocalDateTime.now());
+        ordersMapper.update(orders);
     }
 }
