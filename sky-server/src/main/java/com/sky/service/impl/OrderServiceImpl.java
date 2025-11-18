@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.context.BaseContext;
@@ -20,6 +21,8 @@ import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
@@ -41,6 +46,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper ordersMapper;
     @Resource
     private OrderDetailMapper orderDetailMapper;
+    @Resource
+    private WebSocketServer webSocketServer;
 
     @Override
     public OrderSubmitVO submit(OrdersSubmitDTO ordersSubmitDTO) {
@@ -64,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
         //设置订单属性
         BeanUtils.copyProperties(ordersSubmitDTO, orders);
         //设置订单号
-        orders.setNumber(UUID.randomUUID().toString().replace("-", ""));
+        orders.setNumber(UUID.randomUUID().toString().replace("-", "").substring(0, 10));
         //设置订单状态（待付款）
         orders.setStatus(Orders.PENDING_PAYMENT);
         //设置支付状态（未支付）
@@ -130,6 +137,15 @@ public class OrderServiceImpl implements OrderService {
         orders.setCheckoutTime(LocalDateTime.now());
         //更新订单信息
         ordersMapper.update(orders);
+        //根据订单id查询订单信息
+        Orders orders1 = ordersMapper.queryByNumber(orderNumber);
+
+        HashMap hashMap = new HashMap<>();
+        hashMap.put("type",1);
+        hashMap.put("orderId",orders1.getId());
+        hashMap.put("content","订单号：" + orders.getNumber());
+        //发送消息给客户端
+        webSocketServer.sendToAllClient(JSON.toJSONString(hashMap));
     }
 
     /**
@@ -334,5 +350,16 @@ public class OrderServiceImpl implements OrderService {
         //设置取消时间
         orders.setCancelTime(LocalDateTime.now());
         ordersMapper.update(orders);
+    }
+
+    @Override
+    public void reminder(Long id) {
+        Orders orders = ordersMapper.queryById(id);
+        HashMap hashMap = new HashMap<>();
+        hashMap.put("type",2);
+        hashMap.put("orderId",id);
+        hashMap.put("content","订单号：" + orders.getNumber());
+        //发送消息给客户端
+        webSocketServer.sendToAllClient(JSON.toJSONString(hashMap));
     }
 }

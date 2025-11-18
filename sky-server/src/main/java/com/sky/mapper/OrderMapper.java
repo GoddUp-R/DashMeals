@@ -54,4 +54,11 @@ public interface OrderMapper {
 
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> queryTimeoutOrders(Integer status, LocalDateTime orderTime);
+    /**
+     * 根据订单号查询订单
+     * @param orderNumber
+     * @return
+     */
+     @Select("select * from orders where number = #{orderNumber}")
+    Orders queryByNumber(String orderNumber);
 }
