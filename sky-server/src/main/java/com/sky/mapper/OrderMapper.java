@@ -6,7 +6,10 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper
@@ -61,4 +64,14 @@ public interface OrderMapper {
      */
      @Select("select * from orders where number = #{orderNumber}")
     Orders queryByNumber(String orderNumber);
+
+    /**
+     * 根据日期查询营业额统计
+
+     * @return
+     */
+     @Select("select sum(amount) from orders where order_time like concat(#{date}, '%')")
+    BigDecimal querySumAmountByDate(String date);
+
+
 }
