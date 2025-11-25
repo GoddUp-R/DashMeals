@@ -10,4 +10,15 @@
     <select id="selectByOpenid" resultType="com.sky.entity.User">
         select * from user where openid = #{openid}
     </select>
+    <select id="queryUserCountByDate" resultType="java.lang.Integer">
+        select count(id) from user
+        <where>
+            <if test="begin != null">
+                create_time &gt;= #{begin}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
 </mapper>

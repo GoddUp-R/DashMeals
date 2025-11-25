@@ -74,4 +74,11 @@ public interface OrderMapper {
     BigDecimal querySumAmountByDate(String date);
 
 
+     /**
+     * 根据日期查询订单数
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    Integer queryOrderCountByDate(LocalDateTime beginTime, LocalDateTime endTime,Integer status);
 }
